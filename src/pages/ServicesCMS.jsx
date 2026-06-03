@@ -16,7 +16,7 @@ export default function ServicesCMS() {
   const getImageUrl = (url) => {
     if (!url) return '';
     if (url.startsWith('http')) return url;
-    return `http://localhost:5000${url}`;
+    return `${window.API_BASE_URL}${url}`;
   };
 
   useEffect(() => {
@@ -178,7 +178,7 @@ export default function ServicesCMS() {
           {heroImage && (
             <div className="relative rounded-xl overflow-hidden border border-borderLine/50 bg-black/20 aspect-[16/9] flex items-center justify-center">
               <img 
-                src={heroImage.startsWith('http') ? heroImage : `http://localhost:5000${heroImage}`} 
+                src={heroImage.startsWith('http') ? heroImage : `${window.API_BASE_URL}${heroImage}`} 
                 alt="Hero Banner Preview" 
                 className="w-full h-full object-cover" 
               />
