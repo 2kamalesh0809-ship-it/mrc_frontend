@@ -18,6 +18,7 @@ export default function HomeCarouselCMS() {
   const [isActive, setIsActive] = useState(true);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [redirectionUrl, setRedirectionUrl] = useState('');
 
   // Image upload and ratio validation states
   const [uploading, setUploading] = useState(false);
@@ -60,13 +61,13 @@ export default function HomeCarouselCMS() {
       const width = img.width;
       const height = img.height;
       const ratio = width / height;
-      const targetRatio = 0.8; // 4:5
-      const tolerance = 0.15; // Allow minor variations
+      const targetRatio = 1.77; // 16:9 Landscape
+      const tolerance = 0.3; // Allow some variations
 
       setImageDimensions({ width, height });
 
       if (Math.abs(ratio - targetRatio) > tolerance) {
-        setImageError(`Warning: Image aspect ratio is ${width}:${height} (~${(width/height).toFixed(2)}). A 4:5 aspect ratio (e.g. 1080x1350) is recommended to prevent stretching.`);
+        setImageError(`Warning: Image aspect ratio is ${width}:${height} (~${(width/height).toFixed(2)}). A 16:9 aspect ratio (e.g. 1920x1080) is recommended to prevent stretching.`);
       }
 
       // Proceed to upload anyway but show ratio warning
@@ -107,7 +108,8 @@ export default function HomeCarouselCMS() {
       displayOrder: parseInt(displayOrder) || 0,
       isActive,
       startDate: startDate ? new Date(startDate).toISOString() : new Date().toISOString(),
-      endDate: endDate ? new Date(endDate).toISOString() : null
+      endDate: endDate ? new Date(endDate).toISOString() : null,
+      redirectionUrl
     };
 
     try {
@@ -147,6 +149,7 @@ export default function HomeCarouselCMS() {
     setIsActive(true);
     setStartDate('');
     setEndDate('');
+    setRedirectionUrl('');
     setEditingId(null);
     setImageError('');
     setImageDimensions(null);
@@ -164,6 +167,7 @@ export default function HomeCarouselCMS() {
     setIsActive(banner.isActive);
     setStartDate(banner.startDate ? banner.startDate.substring(0, 16) : '');
     setEndDate(banner.endDate ? banner.endDate.substring(0, 16) : '');
+    setRedirectionUrl(banner.redirectionUrl || '');
   };
 
   const handleToggleActive = async (id) => {
@@ -261,9 +265,9 @@ export default function HomeCarouselCMS() {
 
                 {imageUrl && (
                   <div className="relative rounded-xl overflow-hidden border border-borderLine/50 bg-black/20 flex items-center justify-center p-2">
-                    <img src={imageUrl} alt="Slide Preview" className="w-[180px] h-[225px] object-cover rounded-lg shadow-lg border border-borderLine/30" />
+                    <img src={imageUrl} alt="Slide Preview" className="w-[320px] h-[180px] object-cover rounded-lg shadow-lg border border-borderLine/30" />
                     <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-[10px] text-white px-2 py-1 rounded">
-                      Mobile Preview Frame (4:5 Ratio)
+                      Mobile Preview Frame (16:9 Landscape)
                     </div>
                   </div>
                 )}
@@ -343,6 +347,17 @@ export default function HomeCarouselCMS() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-xs text-textMuted mb-1.5 ml-1">Redirection URL</label>
+                <input 
+                  type="text" 
+                  value={redirectionUrl}
+                  onChange={(e) => setRedirectionUrl(e.target.value)}
+                  placeholder="https://mrcoach.in/events/event-1"
+                  className="w-full bg-surfaceLight/50 border border-borderLine text-textMain text-sm rounded-xl py-3 px-4 focus:outline-none focus:border-primary/50" 
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-textMuted mb-1.5 ml-1">Publish Time</label>
@@ -418,7 +433,7 @@ export default function HomeCarouselCMS() {
                     "p-4 rounded-xl border transition-all flex gap-4 items-start",
                     b.isActive ? "bg-surfaceLight/25 border-borderLine/40" : "bg-surfaceLight/10 border-borderLine/10 opacity-70"
                   )}>
-                    <img src={b.imageUrl} alt={b.title} className="w-20 h-24 object-cover rounded-lg border border-borderLine/30 shadow" />
+                    <img src={b.imageUrl} alt={b.title} className="w-32 h-18 object-cover rounded-lg border border-borderLine/30 shadow" />
                     
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -438,6 +453,7 @@ export default function HomeCarouselCMS() {
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-textMuted pt-2">
                         <span className="flex items-center gap-1">
                           <Link className="w-3.5 h-3.5 text-primary" /> Redirection: <strong>{b.redirectType}</strong> {b.redirectId && <code>({b.redirectId})</code>}
+                          {b.redirectionUrl && <span className="ml-2 text-textMain font-mono font-medium">({b.redirectionUrl})</span>}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" /> Start: {new Date(b.startDate).toLocaleDateString()}
